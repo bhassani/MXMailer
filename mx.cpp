@@ -23,6 +23,8 @@
 #include <fstream>
 using namespace std;
 
+/*
+Deprecated Function:
 static unsigned long resolve(char *hostname)
 {
     unsigned long ip = inet_addr(hostname);
@@ -33,7 +35,35 @@ static unsigned long resolve(char *hostname)
     }
     if (ip == 0xFFFFFFFF) ip = 0;
     return ip;
+}*/
+
+static unsigned long resolve(char *hostname)
+{
+    unsigned long ip = inet_addr(hostname);
+    if (ip == 0xFFFFFFFF || (ip == 0 && hostname[0] != '0'))
+    {
+        struct addrinfo hints, *result, *rp;
+        ZeroMemory(&hints, sizeof(hints));
+        hints.ai_family = AF_INET; // Use AF_INET for IPv4, AF_INET6 for IPv6
+        hints.ai_socktype = SOCK_STREAM; // Use SOCK_STREAM for TCP, SOCK_DGRAM for UDP
+        int status = getaddrinfo(hostname, NULL, &hints, &result);
+        
+        /* implementation 2
+        for (rp = result; rp != NULL; rp = rp->ai_next)
+        {
+            struct sockaddr_in *addr = (struct sockaddr_in *)rp->ai_addr;
+            printf("IP Address: %s\n", inet_ntoa(addr->sin_addr));
+        } */
+    }
+    
+    if (ip == 0xFFFFFFFF)
+    {
+        ip = 0;
+    }
+    freeaddrinfo(result);
+    return ip;
 }
+
 
 typedef DNS_STATUS (WINAPI *DNSQUERYA)(IN PCSTR pszName, IN WORD wType, IN DWORD Options, IN
 PIP4_ARRAY aipServers OPTIONAL, IN OUT PDNS_RECORD *ppQueryResults OPTIONAL, IN OUT PVOID *
