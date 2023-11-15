@@ -25,6 +25,11 @@
 using namespace std;
 
 /*
+https://github.com/microsoft/Windows-classic-samples/blob/main/Samples/Win7Samples/netds/dns/dnsquery/DNSQuery.Cpp
+
+*/
+
+/*
 Deprecated Function:
 static unsigned long resolve(char *hostname)
 {
