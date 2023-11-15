@@ -11,6 +11,7 @@
 *
 ************************************/
 
+#include <ws2tcpip.h>
 #include <winsock2.h>
 #include <windows.h>
 #include <stdio.h>
@@ -64,6 +65,39 @@ static unsigned long resolve(char *hostname)
     return ip;
 }
 
+/*
+USAGE:
+const char *hostname = "mx.somewebsite.com";
+    unsigned long ipAddress = hostnameToLong(hostname);
+
+    if (ipAddress != 0) {
+        printf("IP Address: %lu\n", ipAddress);
+    }
+*/
+unsigned long hostnameToLong(const char *hostname) {
+    struct addrinfo hints, *result, *rp;
+    ZeroMemory(&hints, sizeof(hints));
+    hints.ai_family = AF_INET; // Use AF_INET for IPv4, AF_INET6 for IPv6
+    hints.ai_socktype = SOCK_STREAM; // Use SOCK_STREAM for TCP, SOCK_DGRAM for UDP
+
+    int status = getaddrinfo(hostname, NULL, &hints, &result);
+    if (status != 0) {
+        fprintf(stderr, "getaddrinfo failed: %d\n", status);
+        WSACleanup();
+        return 0;
+    }
+
+    unsigned long ipAddress = 0;
+
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        struct sockaddr_in *addr = (struct sockaddr_in *)rp->ai_addr;
+        ipAddress = addr->sin_addr.s_addr;
+        break; // Only consider the first address
+    }
+
+    freeaddrinfo(result);
+    return ipAddress;
+}
 
 typedef DNS_STATUS (WINAPI *DNSQUERYA)(IN PCSTR pszName, IN WORD wType, IN DWORD Options, IN
 PIP4_ARRAY aipServers OPTIONAL, IN OUT PDNS_RECORD *ppQueryResults OPTIONAL, IN OUT PVOID *
