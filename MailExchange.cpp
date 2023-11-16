@@ -226,10 +226,41 @@ PDNSRR MxGetResources(const char* szDNS, int num) {
 	return pDnsRR;
 }
 
+/*
 DWORD GetIPAddr(LPCSTR strHost) {
 	HOSTENT* hp = gethostbyname(strHost);
 	return hp?(((PIN_ADDR)hp->h_addr)->S_un.S_addr):0;
+}*/
+
+DWORD GetIPAddr(LPCSTR strHost)
+{
+	struct addrinfo hints, * result, * rp;
+	ZeroMemory(&hints, sizeof(hints));
+    	hints.ai_family = AF_INET; // Use AF_INET for IPv4, AF_INET6 for IPv6
+    	hints.ai_socktype = SOCK_STREAM; // Use SOCK_STREAM for TCP, SOCK_DGRAM for UDP
+
+    	int status = getaddrinfo(strHost, NULL, &hints, &result);
+ 	if (status != 0)
+	{
+        	fprintf(stderr, "getaddrinfo failed: %d\n", status);
+        	return 0;
+    	}
+	unsigned long ipAddress = 0;
+	for (rp = result; rp != NULL; rp = rp->ai_next)
+	{
+        	struct sockaddr_in* addr = (struct sockaddr_in*)rp->ai_addr;
+        	ipAddress = addr->sin_addr.s_addr;
+        	break; // Only consider the first address
+    	}
+	
+	freeaddrinfo(result);
+	return ipAddress?:0;
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/winsock2/ns-winsock2-in_addr
+	//HOSTENT* hp = gethostbyname(strHost);
+	//return hp?(((PIN_ADDR)hp->h_addr)->S_un.S_addr):0;
 }
+
 // checks if the address is really a valid ip address
 bool IsIPAddr(LPCSTR sHost) {
 	if (!sHost) return false;
