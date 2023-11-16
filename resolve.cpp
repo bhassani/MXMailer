@@ -10,6 +10,8 @@
 * which is the address.
 *
 ************************************/
+
+//help from: https://stackoverflow.com/questions/52727565/client-in-c-use-gethostbyname-or-getaddrinfo
 #define _WINSOCK_DEPRECATED_NO_WARNINGS 
 
 #include <ws2tcpip.h>
