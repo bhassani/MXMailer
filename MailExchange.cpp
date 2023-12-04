@@ -10,6 +10,23 @@
 *
 *
 *****************************************************/
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 
+
+#include <winsock2.h>
+#include <iphlpapi.h>
+#include <stdio.h>
+#include <windows.h>
+#pragma comment(lib, "IPHLPAPI.lib")
+
+#include <ws2tcpip.h>
+#include <winsock2.h>
+#include <windows.h>
+#include <stdio.h>
+#include <iphlpapi.h>
+#include <windns.h>
+#include <stdlib.h>
+#pragma comment(lib, "iphlpapi.lib")
+#pragma comment (lib, "ws2_32.lib")
 
 #define ERROR_LEVEL_NONE 0
 #define ERROR_LEVEL_SEND 1
